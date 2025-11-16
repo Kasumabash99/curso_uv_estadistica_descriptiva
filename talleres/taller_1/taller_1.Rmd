@@ -12,6 +12,8 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r}
 library(readxl)
 data<- read_excel(path = "bd2S.xlsx")
+library(dplyr)
+glimpse(data)
 ```
 
 ## Punto 12
