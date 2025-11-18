@@ -5,27 +5,54 @@ output: pdf_document
 date: "2025-11-16"
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
-
 ```{r}
 library(readxl)
-data<- read_excel(path = "bd2S.xlsx")
-library(dplyr)
-glimpse(data)
-library(ggplot2)
-ggplot(data, aes(x=edad))+geom_histogram()
+datos<- read_excel(path = "bd2S.xlsx")
+
 ```
 
-## Punto 12
+```{r setup, include=FALSE}
+library(dplyr)
+datos<- dplyr::mutate(datos,
+    sexo = factor(sexo, levels = c(1, 2), labels = c("Masculino", "Femenino")),
+    est_civ = factor(est_civ, levels = 1:5,
+    labels = c("Soltero", "Casado", "Unión libre", "Separado", "Viudo")),
+    educ = factor(educ, levels = 1:7,
+    labels = c("Primaria", "Secundaria incompleta", "Secundaria completa",
+                                  "Técnico", "Tecnológico", "Profesional", "Postgrado")),
+    desemp = factor(desemp, levels = c(1, 2), labels = c("Sí", "No")),
+    des_est = factor(des_est, levels = c(1, 2), labels = c("Sí", "No")),
+    eps = factor(eps, levels = c(1, 2), labels = c("Sí", "No"))
+  )
+```
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+# Punto 1
+
+```{r}
+library(ggplot2)
+ggplot(datos, aes(x = tiemp_des)) +
+  geom_histogram(binwidth = 2, boundary = 0, closed = "left") +
+  geom_vline(xintercept = 12, linetype = "dashed") +
+  labs(
+    title = "Histograma del tiempo desempleado",
+    x = "Tiempo desempleado (meses)",  # ajusta la unidad real
+    y = "Frecuencia"
+  )
+
+# Porcentaje < 12 meses
+prop_menor_1a <- mean(datos$tiemp_des < 12, na.rm = TRUE)
+prop_menor_1a
+```
+
+
+
+
+
 
 ```{r cars}
-summary(data)
+summary(datos)
 ```
 
 ## Including Plots
