@@ -26,14 +26,7 @@ datos<- dplyr::mutate(datos,
   )
 ```
 
-<<<<<<< HEAD
-## Punto 1
-=======
-
-
 # Punto 1
-
->>>>>>> b159c7208daac372dee87395ebfe940593f7b445
 
 Al analizar el historigrama \@ref(fig:hist-tiemp) podemos concluir que la mayor parte de las personas tarda mas de un año en encontrar trabajo ya que vemos que la barra de mayor tamaño esta al lado derecho de la marca de los 12 meses. Esto nos da a entender que el intervalo con mayor concentración se encuentra entre tiempos de desempleo mayores a un año. 
 
