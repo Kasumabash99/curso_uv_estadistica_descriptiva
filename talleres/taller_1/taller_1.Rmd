@@ -5,13 +5,13 @@ output: pdf_document
 date: "2025-11-16"
 ---
 
-```{r}
+```{r setup, include=FALSE}
 library(readxl)
 datos<- read_excel(path = "bd2S.xlsx")
 
 ```
 
-```{r setup, include=FALSE}
+```{r, include=FALSE}
 library(dplyr)
 datos<- dplyr::mutate(datos,
     sexo = factor(sexo, levels = c(1, 2), labels = c("Masculino", "Femenino")),
@@ -26,15 +26,19 @@ datos<- dplyr::mutate(datos,
   )
 ```
 
-
-
-# Punto 1
 ## Punto 1
 
-```{r}
+Al analizar el historigrama \@ref(fig:hist-tiemp) podemos concluir que la mayor parte de las personas tarda mas de un año en encontrar trabajo ya que vemos que la barra de mayor tamaño esta al lado derecho de la marca de los 12 meses. Esto nos da a entender que el intervalo con mayor concentración se encuentra entre tiempos de desempleo mayores a un año. 
+
+También podemos notar datos por debajo de los 12 meses pero estas frecuencias son menores a las que vemos en los intervalos seguidos de la marca de un año. 
+
+Podemos concluir que la afirmación del ejercicio es erronea. 
+
+
+```{r, echo=FALSE}
 library(ggplot2)
 ggplot(datos, aes(x = tiemp_des)) +
-  geom_histogram(binwidth = 2, boundary = 0, closed = "left") +
+  geom_histogram(binwidth = 3, boundary = 0, closed = "left") +
   geom_vline(xintercept = 12, linetype = "dashed") +
   labs(
     title = "Histograma del tiempo desempleado",
@@ -42,29 +46,52 @@ ggplot(datos, aes(x = tiemp_des)) +
     y = "Frecuencia"
   )
 
-# Porcentaje < 12 meses
-prop_menor_1a <- mean(datos$tiemp_des < 12, na.rm = TRUE)
-prop_menor_1a
 ```
 
 
+## Punto 2
 
+La figura \@ref(fig:porcentaje-desemp) nos indica que las personas desempleadas en esta poblacion superan al porcentaje de desempleo del país segun el DANE
 
+Por lo tanto el enunciado del ejercico se considera afirmativo.
 
+```{r, echo=FALSE, results='asis'}
+# Tabla de desempleo
+tabla_desemp <- table(datos$desemp)
 
-```{r cars}
-summary(datos)
+knitr::kable(tabla_desemp, caption = "Tabla de desempleo según la muestra")
+
+# Proporción de desempleados
+prop_desemp <- mean(datos$desemp == "Sí", na.rm = TRUE) 
+cat(paste0("Porcentaje de desempleados: ", round(prop_desemp *100, 1), "%"))
 ```
 
-## Including Plots
+```{r, echo=FALSE}
 
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
+p_dane <- 0.082  # cambia el valor según el boletín oficial
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+```{r, echo=FALSE}
+library(ggplot2)
+df_comp <- data.frame(
+  Categoria = c("Muestra", "País (DANE)"),
+  Porcentaje = c(prop_desemp, p_dane)
+)
+
+ggplot(df_comp, aes(x = Categoria, y = Porcentaje)) +
+  geom_col(fill = c("#4C72B0", "#DD8452")) +
+  geom_text(aes(label = paste0(round(Porcentaje*100, 1), "%")), 
+            vjust = -0.5, size = 5) +
+  labs(
+    title = "Comparación del porcentaje de desempleo",
+    y = "Porcentaje",
+    x = ""
+  ) +
+  ylim(0, max(df_comp$Porcentaje) * 1.2)
+```
+
+
 ```{r}
 
 ```
