@@ -91,8 +91,39 @@ ggplot(df_comp, aes(x = Categoria, y = Porcentaje)) +
   ylim(0, max(df_comp$Porcentaje) * 1.2)
 ```
 
+## Punto 3
 
-```{r}
+
+```{r, echo=FALSE, results='asis'}
+library(dplyr)
+datos_filtrado <- datos |>
+  filter(educ %in% c("Secundaria completa", "Profesional"))
+
+resumen_ing <- datos_filtrado |>
+  group_by(educ) |>
+  summarise(
+    media_ing = mean(ing, na.rm = TRUE),
+    mediana_ing = median(ing, na.rm = TRUE),
+    sd_ing = sd(ing, na.rm = TRUE),
+    n = n()
+  )
+knitr::kable(resumen_ing, caption = "Ingresos por nivel educativo", digits = 1)
+
+resumen_ing
+```
+
+```{r, echo=FALSE, fig.cap="Comparación de ingresos entre bachilleres y profesionales", out.width="70%"}
+
+library(ggplot2)
+ggplot(datos_filtrado, aes(x = educ, y = ing)) +
+  geom_boxplot(fill = c("#4C72B0", "#DD8452")) +
+  scale_y_continuous(labels = function(x) format(round(x, 6), nsmall = 6)) +
+  labs(
+    title = "Ingresos según nivel educativo",
+    x = "Nivel educativo",
+    y = "Ingresos"
+  ) +
+  theme(axis.text.x = element_text(angle = 25, hjust = 1))
 
 ```
 
