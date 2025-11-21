@@ -232,7 +232,7 @@ ggplot(datos, aes(x = sexo, y = edad)) +
   theme(axis.text.x = element_text(angle = 20, hjust = 1))
 
 ```
-\FloatBarrier
+
 ## Punto 6
 
 ```{r, echo=FALSE, results='asis'}
@@ -270,7 +270,7 @@ library(scales)
 datos_desemp <- subset(datos, desemp == "Sí")
 
 ggplot(datos_desemp, aes(x = eps)) +
-  geom_bar(aes(y = ..prop.., group = 1), fill = "#4C72B0") +
+  geom_bar(aes(y = after_stat(prop), group = 1), fill = "#4C72B0") +
   scale_y_continuous(labels = percent) +
   labs(
     title = "Afiliación a EPS entre personas desempleadas",
