@@ -2,6 +2,8 @@
 title: "Taller Analisis Exploratorio"
 author: Juan Esteban Zuñiga Possu
 output: pdf_document
+header-includes:
+  - \usepackage{placeins}
 date: "2025-11-16"
 ---
 
@@ -230,6 +232,50 @@ ggplot(datos, aes(x = sexo, y = edad)) +
   theme(axis.text.x = element_text(angle = 20, hjust = 1))
 
 ```
+\FloatBarrier
+## Punto 6
 
+```{r, echo=FALSE, results='asis'}
+library(knitr)
 
+# tabla con nombres claros en filas y columnas
+tabla_eps <- table(
+  `Desempleo` = datos$desemp,
+  `Afiliación a EPS` = datos$eps
+)
+
+# forzamos formato LaTeX y la impresión
+print(
+  kable(
+    tabla_eps,
+    format  = "latex",
+    caption = "Tabla cruzada: desempleo (filas) y afiliación a EPS (columnas)",
+    booktabs = TRUE
+  )
+)
+```
+
+```{r, echo=FALSE}
+
+# Porcentaje de NO EPS entre desempleados
+prop_sin_eps_desemp <- prop.table(tabla_eps, margin = 1)[1, 2]
+
+prop_sin_eps_desemp
+```
+
+```{r punto6-plot, echo=FALSE, fig.cap="Afiliación a EPS entre personas desempleadas", out.width="60%"}
+library(ggplot2)
+library(scales)
+
+datos_desemp <- subset(datos, desemp == "Sí")
+
+ggplot(datos_desemp, aes(x = eps)) +
+  geom_bar(aes(y = ..prop.., group = 1), fill = "#4C72B0") +
+  scale_y_continuous(labels = percent) +
+  labs(
+    title = "Afiliación a EPS entre personas desempleadas",
+    x = "Afiliación a EPS",
+    y = "Porcentaje"
+  )
+```
 
