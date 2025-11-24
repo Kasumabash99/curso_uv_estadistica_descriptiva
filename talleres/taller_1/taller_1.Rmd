@@ -2,8 +2,6 @@
 title: "Taller Analisis Exploratorio"
 author: Juan Esteban Zuñiga Possu
 output: pdf_document
-header-includes:
-  - \usepackage{placeins}
 date: "2025-11-16"
 ---
 
@@ -29,6 +27,7 @@ datos<- dplyr::mutate(datos,
   )
 ```
 
+\clearpage
 ## Punto 1
 
 Al analizar el historigrama \@ref(fig:hist-tiemp) podemos concluir que la mayor parte de las personas tarda mas de un año en encontrar trabajo ya que vemos que la barra de mayor tamaño esta al lado derecho de la marca de los 12 meses. Esto nos da a entender que el intervalo con mayor concentración se encuentra entre tiempos de desempleo mayores a un año. 
@@ -51,7 +50,7 @@ ggplot(datos, aes(x = tiemp_des)) +
 
 ```
 
-
+\clearpage
 ## Punto 2
 
 La figura \@ref(fig:porcentaje-desemp) nos indica que las personas desempleadas en esta poblacion superan al porcentaje de desempleo del país segun el DANE
@@ -94,6 +93,7 @@ ggplot(df_comp, aes(x = Categoria, y = Porcentaje)) +
   ylim(0, max(df_comp$Porcentaje) * 1.2)
 ```
 
+\clearpage
 ## Punto 3
 
 Para poder calcular si el promedio de los ingresos en el hogar es mayor en personas profesionales que en bachilleres, se calculo la media(promedio), la mediana y la desviacion estandar
@@ -141,6 +141,7 @@ ggplot(datos_filtrado, aes(x = educ, y = ing)) +
   theme(axis.text.x = element_text(angle = 25, hjust = 1))
 ```
 
+\clearpage
 ## Punto 4
 
 Apartir de la observación del diagrama de cajas podemos concluir que sí hay una diferencia en la cantidad de valores atípicos que hay dependiendo de los ingresos según el sexo del encuestado. 
@@ -192,6 +193,7 @@ ggplot(datos, aes(x = sexo, y = ing)) +
   theme(axis.text.x = element_text(angle = 25, hjust = 1))
 ```
 
+\clearpage
 ## Punto 5
 
 Para verificar si la variabilidad de la edad en el sexo femenino es mayor que en el sexo masculino, se calcularon indicadores de dispersión como la desviación estándar, la varianza y el rango intercuartílico. Los resultados se presentan en la Tabla 4
@@ -233,25 +235,27 @@ ggplot(datos, aes(x = sexo, y = edad)) +
 
 ```
 
+\clearpage
 ## Punto 6
 
-```{r, echo=FALSE, results='asis'}
+En este punto buscábamos  confirmar si existe un mayor porcentaje de personas que estuvieron desempleadas y que no se encuentran afiliadas a una EPS. 
+
+Por lo tanto usamos en primera instancia una tabla donde cruzamos los datos y podemos observar que la cantidad de gente encuestada que respondió que Sí estuvieron desempleadas y que NO se encuentran afiliadas a una EPS es mucho mayor con un valor de 1977.
+
+Por último usamos un diagrama de barras donde comparamos solamente la afiliación a una EPS entre personas desempleadas, podemos ver que mas del 50% de las personas desempleadas encuestadas NO se encuentran afiliadas a una EPS.
+
+```{r, echo=FALSE}
 library(knitr)
 
-# tabla con nombres claros en filas y columnas
 tabla_eps <- table(
   `Desempleo` = datos$desemp,
   `Afiliación a EPS` = datos$eps
 )
 
-# forzamos formato LaTeX y la impresión
-print(
-  kable(
-    tabla_eps,
-    format  = "latex",
-    caption = "Tabla cruzada: desempleo (filas) y afiliación a EPS (columnas)",
-    booktabs = TRUE
-  )
+kable(
+  tabla_eps,
+  caption = "Tabla cruzada: desempleo (filas) y afiliación a EPS (columnas)",
+  booktabs = TRUE
 )
 ```
 
@@ -260,7 +264,6 @@ print(
 # Porcentaje de NO EPS entre desempleados
 prop_sin_eps_desemp <- prop.table(tabla_eps, margin = 1)[1, 2]
 
-prop_sin_eps_desemp
 ```
 
 ```{r punto6-plot, echo=FALSE, fig.cap="Afiliación a EPS entre personas desempleadas", out.width="60%"}
@@ -278,4 +281,84 @@ ggplot(datos_desemp, aes(x = eps)) +
     y = "Porcentaje"
   )
 ```
+
+\clearpage
+## Punto 7
+
+En este punto buscábamos confirmar la afirmación de que el porcentaje más alto de la población corresponde a personas en estados civil de solteras.
+
+Por medio de un gráfico de barras podemos confirmar que más del 40% de la población esta soltera.
+
+```{r, echo=FALSE}
+tabla_estciv <- table(datos$est_civ)
+```
+
+```{r, echo=FALSE}
+prop_estciv <- prop.table(tabla_estciv) * 100
+```
+
+```{r punto7-plot2, echo=FALSE, fig.cap="Porcentaje por estado civil", out.width="60%"}
+library(ggplot2)
+library(scales)
+
+ggplot(datos, aes(x = est_civ)) +
+  geom_bar(aes(y = after_stat(count / sum(count))), fill = "#4C72B0") +
+  scale_y_continuous(labels = percent_format()) +
+  labs(
+    title = "Porcentaje por estado civil",
+    x = "Estado civil",
+    y = "Porcentaje"
+  ) +
+  theme(axis.text.x = element_text(angle = 15, hjust = 1))
+```
+
+\clearpage
+## Punto 8
+
+Las medidas de tendencia central muestran que la media del tiempo sin empleo (14.17 meses) es ligeramente mayor que la mediana (14 meses), lo que indica una asimetría positiva, pero esta es leve. Esta diferencia, aunque pequeña, se explica por la presencia de valores altos que afectan el promedio.
+
+El diagrama de caja de la Figura~\ref{fig:punto8-boxplot} confirma esta apreciación: el bigote superior es más largo que el inferior y se observan varios valores atípicos elevados (hasta 33 meses). Este comportamiento es característico de una distribución con cola hacia la derecha.
+
+Por lo tanto, se concluye que la afirmación del enunciado es \textbf{verdadera}: la distribución empírica del tiempo máximo sin empleo presenta una asimetría positiva, aunque de forma moderada.
+
+```{r, echo=FALSE}
+library(dplyr)
+
+tiempo_stats <- datos %>%
+  summarise(
+    media = mean(tiemp_des, na.rm = TRUE),
+    mediana = median(tiemp_des, na.rm = TRUE),
+    desviacion = sd(tiemp_des, na.rm = TRUE),
+    min = min(tiemp_des, na.rm = TRUE),
+    max = max(tiemp_des, na.rm = TRUE)
+  )
+
+knitr::kable(tiempo_stats,
+             caption = "Medidas de tendencia central del tiempo sin empleo (meses)")
+
+```
+
+```{r punto8-hist, echo=FALSE, fig.cap="Histograma del tiempo sin empleo", out.width="70%"}
+library(ggplot2)
+
+ggplot(datos, aes(x = tiemp_des)) +
+  geom_histogram(binwidth = 3, fill = "#4C72B0", color = "white") +
+  labs(
+    title = "Distribución del tiempo sin empleo (meses)",
+    x = "Meses desempleado",
+    y = "Frecuencia"
+  )
+```
+```{r punto8-boxplot, echo=FALSE, fig.cap="Diagrama de cajas del tiempo sin empleo", out.width="60%"}
+ggplot(datos, aes(y = tiemp_des)) +
+  geom_boxplot(fill = "#DD8452") +
+  labs(
+    title = "Diagrama de caja del tiempo sin empleo",
+    y = "Meses desempleado"
+  )
+```
+\clearpage
+## Punto 9
+
+
 
