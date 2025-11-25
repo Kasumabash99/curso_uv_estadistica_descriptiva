@@ -410,4 +410,137 @@ ggplot(datos, aes(x = des_est, y = ing)) +
 \clearpage
 ## Punto 10
 
+Las medidas de dispersión muestran una desviación estándar y un rango intercuartílico elevados, así como una gran diferencia entre el ingreso mínimo y el máximo. 
 
+El histograma de la Figura~\ref{fig:punto10-hist} evidencia una distribución amplia, con presencia de valores altos poco frecuentes que generan una larga cola hacia la derecha. El diagrama de cajas de la Figura~\ref{fig:punto10-boxplot} confirma la existencia de valores atípicos y una dispersión amplia.
+
+En conjunto, estos elementos indican que los ingresos no están concentrados alrededor de un valor central.
+
+Por lo tanto la afirmacion del enunciado es \textbf{verdadera} ya que los ingresos presentan un comportamiento heterogeneo
+
+```{r punto10-tabla, echo=FALSE}
+library(dplyr)
+library(knitr)
+
+ing_stats <- datos %>%
+  summarise(
+    media = mean(ing, na.rm = TRUE),
+    mediana = median(ing, na.rm = TRUE),
+    sd = sd(ing, na.rm = TRUE),
+    var = var(ing, na.rm = TRUE),
+    iqr = IQR(ing, na.rm = TRUE),
+    min = min(ing, na.rm = TRUE),
+    max = max(ing, na.rm = TRUE)
+  )
+kable(ing_stats, caption = "Medidas de dispersión del ingreso")
+```
+
+```{r punto10-hist, echo=FALSE, fig.cap="Histograma de los ingresos", out.width="70%"}
+library(ggplot2)
+library(scales)
+
+ggplot(datos, aes(x = ing)) +
+  geom_histogram(binwidth = 500000, fill = "#4C72B0", color = "white") +
+  scale_x_continuous(labels = label_number(big.mark=".", decimal.mark=",")) +
+  labs(
+    title = "Distribución de los ingresos",
+    x = "Ingresos",
+    y = "Frecuencia"
+  )
+```
+
+```{r punto10-boxplot, echo=FALSE, fig.cap="Diagrama de cajas de los ingresos", out.width="50%"}
+ggplot(datos, aes(y = ing)) +
+  geom_boxplot(fill = "#DD8452") +
+  scale_y_continuous(labels = label_number(big.mark=".", decimal.mark=",")) +
+  labs(
+    title = "Diagrama de caja de los ingresos",
+    y = "Ingresos"
+  )
+```
+
+\clearpage
+## Punto 11
+
+La ojiva del tiempo sin empleo muestra un crecimiento lento en los valores más bajos y también un crecimiento lento en los valores más altos, mientras que el mayor aumento se concentra en la zona intermedia de la distribución. Este comportamiento indica que la mayoría de personas presenta tiempos de desempleo cercanos a los valores centrales, mientras que son pocos los individuos con tiempos muy bajos o muy altos.
+
+Por lo tanto, la afirmación del enunciado es \textbf{falsa}: la ojiva no evidencia asimetría negativa, sino una distribución aproximadamente simétrica con mayor concentración en los valores intermedios.
+
+```{r punto11-ojiva-data, echo=FALSE}
+library(dplyr)
+
+# Ordenar los valores y construir acumulados
+ojiva <- datos %>%
+  select(tiemp_des) %>%
+  filter(!is.na(tiemp_des)) %>%
+  arrange(tiemp_des) %>%
+  mutate(
+    freq = 1,
+    acum = cumsum(freq),
+    acum_prop = acum / n()
+  )
+```
+
+```{r punto11-ojiva, echo=FALSE,fig.cap="Ojiva del tiempo máximo sin empleo", out.width="70%"}
+
+library(ggplot2)
+library(scales)
+
+ggplot(ojiva, aes(x = tiemp_des, y = acum_prop)) +
+  geom_line(color = "#4C72B0", linewidth = 1.2) +
+  geom_point(color = "#4C72B0") +
+  scale_y_continuous(labels = percent_format()) +
+  labs(
+    title = "Ojiva del tiempo máximo sin empleo",
+    x = "Meses sin empleo",
+    y = "Porcentaje acumulado"
+  )
+```
+
+\clearpage
+## Punto 12
+
+A partir de los histogramas de frecuencia de los ingresos según el sexo, se observa que la distribución del ingreso en los hombres es mucho más concentrada, con la mayoría de observaciones ubicadas entre 1.5 y 7 millones de pesos, lo que refleja una variabilidad moderada. Esto coincide con la desviación estándar relativamente baja reportada.
+
+En contraste, la distribución de ingresos de las mujeres muestra una mayor dispersión, con valores que se extienden desde ingresos muy bajos hasta valores extremadamente altos, alcanzando más de 29 millones de pesos. Esta cola pronunciada hacia la derecha genera una desviación estándar considerablemente mayor, lo cual indica una variabilidad alta dentro del grupo femenino.
+
+En términos del valor medio, el ingreso promedio de las mujeres resulta superior al de los hombres. 
+
+En conclusión, los histogramas revelan que, aunque el ingreso medio de las mujeres es mayor, la distribución en este grupo es más heterogénea y presenta una asimetría positiva más pronunciada, mientras que la distribución masculina es más estable y concentrada en torno a su valor central.
+
+```{r punto12-tabla, echo=FALSE}
+library(dplyr)
+library(knitr)
+
+ing_sexo <- datos %>%
+  group_by(sexo) %>%
+  summarise(
+    media_ing   = mean(ing, na.rm = TRUE),
+    mediana_ing = median(ing, na.rm = TRUE),
+    sd_ing      = sd(ing, na.rm = TRUE),
+    min_ing     = min(ing, na.rm = TRUE),
+    max_ing     = max(ing, na.rm = TRUE),
+    n           = n(),
+    .groups = "drop"
+  )
+
+knitr::kable(
+  ing_sexo,
+  caption = "Medidas de tendencia central y variabilidad del ingreso según sexo"
+)
+```
+```{r punto12-hist, echo=FALSE,fig.cap="Histogramas de ingresos según sexo", out.width="80%"}
+library(ggplot2)
+library(scales)
+
+ggplot(datos, aes(x = ing)) +
+  geom_histogram(binwidth = 500000, fill = "#4C72B0", color = "white") +
+  scale_x_continuous(labels = label_number(big.mark = ".", decimal.mark = ",")) +
+  labs(
+    title = "Distribución de los ingresos según sexo",
+    x = "Ingresos",
+    y = "Frecuencia"
+  ) +
+  facet_wrap(~ sexo, ncol = 1) +
+  theme(axis.text.x = element_text(angle = 20, hjust = 1))
+```
