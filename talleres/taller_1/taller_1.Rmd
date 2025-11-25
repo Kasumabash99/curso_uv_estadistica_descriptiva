@@ -544,3 +544,29 @@ ggplot(datos, aes(x = ing)) +
   facet_wrap(~ sexo, ncol = 1) +
   theme(axis.text.x = element_text(angle = 20, hjust = 1))
 ```
+
+\clearpage
+## Punto 13
+
+El diagrama de cajas de los ingresos según sexo muestra diferencias claras en el comportamiento de la distribución entre hombres y mujeres. En el caso del grupo masculino, la caja es más compacta y los valores atípicos son pocos y relativamente cercanos al resto de la distribución. Esto indica una baja variabilidad y una concentración fuerte de los ingresos alrededor de la mediana.
+
+En contraste, el grupo femenino presenta una caja mucho más amplia, un rango intercuartílico mayor y una gran cantidad de valores atípicos que alcanzan niveles de ingreso considerablemente altos, algunos superiores a 25 y 30 millones de pesos. Esta gran dispersión refleja una variabilidad mucho mayor en los ingresos femeninos.
+
+En conclusión, el comportamiento de los ingresos según sexo es \textbf{claramente diferente}: los hombres presentan una distribución más estable y concentrada, mientras que las mujeres exhiben una distribución más dispersa, con valores extremos que incrementan notablemente la variabilidad.
+
+```{r punto13-boxplot, echo=FALSE,fig.cap="Diagrama de cajas de los ingresos según sexo", out.width="70%"}
+library(ggplot2)
+library(scales)
+
+ggplot(datos, aes(x = sexo, y = ing, fill = sexo)) +
+  geom_boxplot() +
+  scale_y_continuous(labels = label_number(big.mark=".", decimal.mark=",")) +
+  scale_fill_manual(values = c("Masculino" = "#4C72B0", "Femenino" = "#DD8452")) +
+  labs(
+    title = "Diagrama de cajas de los ingresos según sexo",
+    x = "Sexo",
+    y = "Ingresos"
+  ) +
+  theme(axis.text.x = element_text(angle = 15, hjust = 1),
+        legend.position = "none")
+```
