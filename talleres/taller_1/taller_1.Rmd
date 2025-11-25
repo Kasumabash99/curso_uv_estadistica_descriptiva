@@ -570,3 +570,47 @@ ggplot(datos, aes(x = sexo, y = ing, fill = sexo)) +
   theme(axis.text.x = element_text(angle = 15, hjust = 1),
         legend.position = "none")
 ```
+
+\clearpage
+## Punto 14
+
+A partir de las medidas estadísticas del ingreso según nivel educativo presentadas en la Tabla, se observa que existe una relación clara entre el nivel de formación y el ingreso percibido. Los niveles educativos más bajos (Primaria y Secundaria) registran los ingresos promedio y medianos más reducidos. En cambio, los niveles Técnico, Tecnológico, Profesional y Postgrado muestran incrementos sustanciales en sus ingresos medios, con promedios que superan los 4.5 millones de pesos e incluso alcanzan valores cercanos a 5.5 millones en los niveles más altos.
+
+El diagrama de cajas de la Figura~\ref{fig:punto14-boxplot} refuerza este comportamiento: los grupos con menor escolaridad presentan cajas bajas y compactas, lo cual indica ingresos reducidos y poca variabilidad. Conforme aumenta el nivel educativo, las cajas se desplazan hacia valores más altos de ingreso y se hacen más amplias, reflejando tanto mayores niveles salariales como una mayor dispersión. Especialmente en los niveles Profesional y Postgrado, la presencia de múltiples valores atípicos elevados sugiere que algunas personas alcanzan ingresos considerablemente altos, contribuyendo a una mayor heterogeneidad dentro de estos grupos.
+
+```{r punto14-tabla, echo=FALSE}
+library(dplyr)
+library(knitr)
+
+ing_educ <- datos %>%
+  group_by(educ) %>%
+  summarise(
+    media_ing   = mean(ing, na.rm = TRUE),
+    mediana_ing = median(ing, na.rm = TRUE),
+    sd_ing      = sd(ing, na.rm = TRUE),
+    n           = n(),
+    .groups = "drop"
+  )
+
+kable(
+  ing_educ,
+  caption = "Medidas de ingreso según nivel educativo"
+)
+```
+
+```{r punto14-boxplot, echo=FALSE,fig.cap="Ingresos según nivel educativo", out.width="75%"}
+library(ggplot2)
+library(scales)
+
+ggplot(datos, aes(x = educ, y = ing, fill = educ)) +
+  geom_boxplot() +
+  scale_y_continuous(labels = label_number(big.mark=".", decimal.mark=",")) +
+  labs(
+    title = "Ingresos según nivel educativo",
+    x = "Nivel educativo",
+    y = "Ingresos"
+  ) +
+  theme(axis.text.x = element_text(angle = 25, hjust = 1),
+        legend.position = "none")
+```
+
