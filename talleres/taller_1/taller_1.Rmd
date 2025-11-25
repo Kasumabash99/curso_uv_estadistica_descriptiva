@@ -360,5 +360,54 @@ ggplot(datos, aes(y = tiemp_des)) +
 \clearpage
 ## Punto 9
 
+Para poder comprobar que la mediana de los ingresos es menor en personas que trabajan en lo que no estudiaron en comparación a personas que sí trabajan en los que estudiaron, procedimos a realizar el cálculo  de la misma donde podemos observar que la mediana para las personas que trabajan en algo diferente a lo estudiado es de (4382193) mientras que para las personas que si se desempeñan en los estudiado es de (4520096)
+
+Para demostrarlo graficamente usamos un diagrama de cajas
+
+Por lo tanto el enunciado es \textbf{verdadero}
+
+
+```{r punto9-tabla, echo=FALSE}
+library(dplyr)
+library(knitr)
+
+ing_desempeno <- datos %>%
+  group_by(des_est) %>%
+  summarise(
+    media_ing    = mean(ing, na.rm = TRUE), 
+    mediana_ing  = median(ing, na.rm = TRUE),
+    sd_ing       = sd(ing, na.rm = TRUE),
+    n            = n()
+  )
+
+# Convertir n a porcentaje del total
+ing_desempeno <- ing_desempeno %>%
+  mutate(porcentaje = round(n / sum(n) * 100, 1))
+
+knitr::kable(
+  ing_desempeno %>% select(des_est, media_ing, mediana_ing, sd_ing, porcentaje),
+  caption = "Medidas de ingreso según desempeño (en porcentajes)"
+)
+```
+
+```{r punto9-boxplot, echo=FALSE,fig.cap="Ingresos según desempeño en lo estudiado", out.width="70%"}
+library(ggplot2)
+library(scales)
+
+ggplot(datos, aes(x = des_est, y = ing)) +
+  geom_boxplot(fill = c("#4C72B0")) +
+  scale_y_continuous(
+    labels = label_number(big.mark = ".", decimal.mark = ",")
+  ) +
+  labs(
+    title = "Ingresos según desempeño en lo estudiado",
+    x = "¿Se desempeña en lo que estudió?",
+    y = "Ingresos"
+  ) +
+  theme(axis.text.x = element_text(angle = 15, hjust = 1))
+```
+
+\clearpage
+## Punto 10
 
 
