@@ -614,3 +614,147 @@ ggplot(datos, aes(x = educ, y = ing, fill = educ)) +
         legend.position = "none")
 ```
 
+\clearpage
+## Punto 15
+
+La Tabla muestra el tiempo máximo sin empleo según el nivel educativo del encuestado. Los resultados evidencian que los niveles de escolaridad más bajos (Primaria y Secundaria) presentan los tiempos de desempleo más altos, con medianas cercanas a los 19–21 meses
+
+Los niveles Técnico y Tecnológico sí muestran tiempos de desempleo significativamente menores, con medianas de 12 meses, lo que indica una inserción laboral más rápida en estos grupos. No obstante, en los niveles Profesional y Postgrado el tiempo sin empleo vuelve a incrementarse, alcanzando medianas de 15 meses, lo cual rompe la tendencia esperada.
+
+En conclusión, la afirmación del enunciado es \textbf{falsa}: en estos datos no se cumple que un mayor nivel educativo esté asociado sistemáticamente con un menor tiempo sin empleo. Aunque ciertos niveles intermedios exhiben una mejor inserción laboral, los niveles más altos no continúan esta tendencia.
+
+```{r punto15-tabla, echo=FALSE}
+library(dplyr)
+library(knitr)
+
+tiempo_educ <- datos %>%
+  group_by(educ) %>%
+  summarise(
+    media_tiempo   = mean(tiemp_des, na.rm = TRUE),
+    mediana_tiempo = median(tiemp_des, na.rm = TRUE),
+    sd_tiempo      = sd(tiemp_des, na.rm = TRUE),
+    n              = n(),
+    .groups = "drop"
+  )
+
+kable(
+  tiempo_educ,
+  caption = "Tiempo máximo sin empleo según nivel educativo"
+)
+```
+
+```{r punto15-boxplot, echo=FALSE,fig.cap="Tiempo sin empleo según nivel educativo", out.width="75%"}
+library(ggplot2)
+
+ggplot(datos, aes(x = educ, y = tiemp_des, fill = educ)) +
+  geom_boxplot() +
+  labs(
+    title = "Tiempo máximo sin empleo según nivel educativo",
+    x = "Nivel educativo",
+    y = "Meses sin empleo"
+  ) +
+  theme(axis.text.x = element_text(angle = 25, hjust = 1),
+        legend.position = "none")
+```
+
+\clearpage
+## Punto 16
+
+La Tabla y la Figura~\ref{fig:punto16-plot} muestran la distribución conjunta del estado civil y los intervalos de edad del encuestado. En el grupo más joven (18--25 años) predomina ampliamente el estado civil de soltero, superando el 70\% de los casos. Este patrón cambia de manera marcada en el intervalo de 26--35 años, donde aumenta considerablemente la proporción de personas casadas y en unión libre, reduciéndose la soltería.
+
+En los grupos de 36--45 y 46--55 años esta tendencia se mantiene, observándose una mayor presencia relativa de personas casadas o en unión libre, mientras que la soltería disminuye. Esto evidencia que la composición del estado civil varía sistemáticamente conforme avanza la edad.
+
+En consecuencia, se concluye que sí existe una relación entre el estado civil y la edad del encuestado: los grupos jóvenes presentan mayor soltería, mientras que los grupos de edad intermedia muestran mayores proporciones de personas casadas o en unión libre. 
+
+```{r punto16-intervalos, echo=FALSE}
+library(dplyr)
+
+datos <- datos %>%
+  mutate(
+    edad_grupo = cut(
+      edad,
+      breaks = c(0, 25, 35, 45, 55, Inf),
+      labels = c("18-25", "26-35", "36-45", "46-55", "56+"),
+      right = TRUE
+    )
+  )
+```
+
+```{r punto16-tabla, echo=FALSE}
+library(knitr)
+
+tabla_edad_estciv <- table(datos$edad_grupo, datos$est_civ)
+
+kable(
+  tabla_edad_estciv,
+  caption = "Tabla cruzada: grupo de edad y estado civil"
+)
+```
+
+```{r punto16-plot, echo=FALSE,fig.cap="Distribución del estado civil según intervalos de edad", out.width="80%"}
+library(ggplot2)
+library(scales)
+
+ggplot(datos, aes(x = edad_grupo, fill = est_civ)) +
+  geom_bar(position = "fill") +
+  scale_y_continuous(labels = percent_format()) +
+  labs(
+    title = "Distribución del estado civil según intervalos de edad",
+    x = "Intervalo de edad",
+    y = "Proporción",
+    fill = "Estado civil"
+  ) +
+  theme(axis.text.x = element_text(angle = 20, hjust = 1))
+```
+
+\clearpage
+## Punto 17
+
+La Tabla 13 y la Figura~\ref{fig:punto17-plot} muestran la relación entre el nivel educativo y los intervalos de ingreso. Los resultados permiten observar un patrón claro: los ingresos más bajos se concentran en los niveles educativos más reducidos, mientras que los niveles superiores presentan una mayor proporción de ingresos altos.
+
+Los niveles educativos de Primaria, Secundaria incompleta y Secundaria completa presentan casi la totalidad de sus observaciones en el intervalo de 0--2 millones de pesos, lo que indica ingresos notablemente bajos y poco dispersos dentro de estos grupos.
+
+En contraste, a partir del nivel Técnico y especialmente en Tecnológico, Profesional y Postgrado, se observa una distribución mucho más amplia en los ingresos, con una proporción significativa en los intervalos intermedios (2--5 millones y 5--10 millones) e incluso en los intervalos superiores (10--20 millones y más de 20 millones).
+
+Este comportamiento sugiere una relación positiva entre el nivel educativo y los ingresos: conforme aumenta el nivel educativo, los ingresos tienden a ser mayores y más variables. Por lo tanto, se concluye que existe una asociación notable entre ambas variables, donde un mayor nivel de formación se relaciona con mejores niveles de ingreso.
+
+```{r punto17-intervalos, echo=FALSE}
+library(dplyr)
+
+datos <- datos %>%
+  mutate(
+    ingreso_grupo = cut(
+      ing,
+      breaks = c(0, 2000000, 5000000, 10000000, 20000000, Inf),
+      labels = c("0–2M", "2–5M", "5–10M", "10–20M", "20M+"),
+      right = TRUE
+    )
+  )
+```
+
+```{r punto17-tabla, echo=FALSE}
+library(knitr)
+
+tabla_ing_educ <- table(datos$educ, datos$ingreso_grupo)
+
+kable(
+  tabla_ing_educ,
+  caption = "Tabla cruzada: nivel educativo e intervalos de ingreso"
+)
+```
+
+```{r punto17-plot, echo=FALSE,fig.cap="Distribución del ingreso según nivel educativo", out.width="85%"}
+library(ggplot2)
+library(scales)
+
+ggplot(datos, aes(x = educ, fill = ingreso_grupo)) +
+  geom_bar(position = "fill") +
+  scale_y_continuous(labels = percent_format()) +
+  labs(
+    title = "Distribución proporcional del ingreso según nivel educativo",
+    x = "Nivel educativo",
+    y = "Proporción",
+    fill = "Intervalo de ingresos"
+  ) +
+  theme(axis.text.x = element_text(angle = 25, hjust = 1))
+```
