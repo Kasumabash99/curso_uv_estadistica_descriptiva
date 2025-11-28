@@ -1,18 +1,34 @@
 ---
-title: "Taller Analisis Exploratorio"
-author: Juan Esteban Zuñiga Possu
+title: "Informe Analisis Exploratorio"
+author: Juan Esteban Zuñiga Possu 2415049
+fontsize: 14pt
+date: "2025-11-28"
 output: pdf_document
-date: "2025-11-16"
+header-includes:
+  - \usepackage{graphicx}
 ---
 
-```{r setup, include=FALSE}
-options(scipen = 999)  # evita notación científica en general
+\begin{center}
+\large
+Estadística Descriptiva 761004M `r rmarkdown::metadata$materia` \\
+Omar Alexander Rios Saavedra `r rmarkdown::metadata$profesor`
+\end{center}
+
+
+\begin{center}
+\includegraphics[width=0.2\textwidth]{logouv.jpg}
+\end{center}
+
+\newpage
+
+```{r setup, include=TRUE}
+options(scipen = 999)  
 library(readxl)
 datos<- read_excel(path = "bd2S.xlsx")
 
 ```
 
-```{r, include=FALSE}
+```{r, include=TRUE}
 library(dplyr)
 datos<- dplyr::mutate(datos,
     sexo = factor(sexo, levels = c(1, 2), labels = c("Masculino", "Femenino")),
@@ -30,21 +46,21 @@ datos<- dplyr::mutate(datos,
 \clearpage
 ## Punto 1
 
-Al analizar el historigrama \@ref(fig:hist-tiemp) podemos concluir que la mayor parte de las personas tarda mas de un año en encontrar trabajo ya que vemos que la barra de mayor tamaño esta al lado derecho de la marca de los 12 meses. Esto nos da a entender que el intervalo con mayor concentración se encuentra entre tiempos de desempleo mayores a un año. 
+Al analizar el historigrama podemos concluir que la mayor parte de las personas tarda mas de un año en encontrar trabajo ya que vemos que la barra de mayor tamaño esta al lado derecho de la marca de los 12 meses. Esto nos da a entender que el intervalo con mayor concentración se encuentra entre tiempos de desempleo mayores a un año. 
 
 También podemos notar datos por debajo de los 12 meses pero estas frecuencias son menores a las que vemos en los intervalos seguidos de la marca de un año. 
 
 Podemos concluir que la afirmación del ejercicio es erronea. 
 
 
-```{r, echo=FALSE}
+```{r, echo=TRUE}
 library(ggplot2)
 ggplot(datos, aes(x = tiemp_des)) +
   geom_histogram(binwidth = 3, boundary = 0, closed = "left") +
   geom_vline(xintercept = 12, linetype = "dashed") +
   labs(
     title = "Histograma del tiempo desempleado",
-    x = "Tiempo desempleado (meses)",  # ajusta la unidad real
+    x = "Tiempo desempleado (meses)",  
     y = "Frecuencia"
   )
 
@@ -53,28 +69,26 @@ ggplot(datos, aes(x = tiemp_des)) +
 \clearpage
 ## Punto 2
 
-La figura \@ref(fig:porcentaje-desemp) nos indica que las personas desempleadas en esta poblacion superan al porcentaje de desempleo del país segun el DANE
+La figura nos indica que las personas desempleadas en esta poblacion superan al porcentaje de desempleo del país segun el DANE
 
 Por lo tanto el enunciado del ejercico se considera afirmativo.
 
-```{r, echo=FALSE, results='asis'}
-# Tabla de desempleo
+```{r, echo=TRUE, results='asis'}
 tabla_desemp <- table(datos$desemp)
 
 knitr::kable(tabla_desemp, caption = "Tabla de desempleo según la muestra")
 
-# Proporción de desempleados
 prop_desemp <- mean(datos$desemp == "Sí", na.rm = TRUE) 
 cat(paste0("Porcentaje de desempleados: ", round(prop_desemp *100, 1), "%"))
 ```
 
-```{r, echo=FALSE}
+```{r, echo=TRUE}
 
-p_dane <- 0.082  # cambia el valor según el boletín oficial
+p_dane <- 0.082  
 ```
 
 
-```{r, echo=FALSE}
+```{r, echo=TRUE}
 library(ggplot2)
 df_comp <- data.frame(
   Categoria = c("Muestra", "País (DANE)"),
@@ -104,7 +118,7 @@ Por lo tanto, el enunciado del ejercicio que afirma que el promedio de ingresos 
 
 sd = desviación estandar
 
-```{r, echo=FALSE, results='asis'}
+```{r, echo=TRUE, results='asis'}
 library(dplyr)
 datos_filtrado <- datos |>
   filter(educ %in% c("Secundaria completa", "Profesional"))
@@ -120,7 +134,7 @@ resumen_ing <- datos_filtrado |>
 knitr::kable(resumen_ing, caption = "Ingresos por nivel educativo", digits = 1)
 ```
 
-```{r, echo=FALSE, fig.cap="Comparación de ingresos entre bachilleres y profesionales", out.width="70%"}
+```{r, echo=TRUE, fig.cap="Comparación de ingresos entre bachilleres y profesionales", out.width="70%"}
 library(ggplot2)
 library(scales)
 
@@ -150,7 +164,7 @@ En ambos grupos hay valores atípicos, pero en el sexo masculino encontramos may
 
 iqr = rango intercuartítilico
 
-```{r, echo=FALSE}
+```{r, echo=TRUE}
 library(dplyr)
 
 res_ing <- datos %>%
@@ -166,7 +180,7 @@ res_ing <- datos %>%
 
 knitr::kable(res_ing, caption = "Medidas descriptivas del ingreso")
 ```
-```{r, echo=FALSE}
+```{r, echo=TRUE}
 q1 <- quantile(datos$ing, 0.25, na.rm = TRUE)
 q3 <- quantile(datos$ing, 0.75, na.rm = TRUE)
 iqr <- IQR(datos$ing, na.rm = TRUE)
@@ -204,7 +218,7 @@ La Figura~\ref{fig:punto5-boxplot} refuerza esta conclusión.
 
 La afirmación del ejercicio se considera \textbf{verdadera}: la variabilidad de la edad es mayor en el sexo femenino que en el masculino.
 
-```{r, echo=FALSE}
+```{r, echo=TRUE}
 
 library(dplyr)
 
@@ -221,7 +235,7 @@ edad_var <- datos %>%
 knitr::kable(edad_var, caption = "Medidas de variabilidad de la edad por sexo")
 ```
 
-```{r, punto5-boxplot, echo=FALSE, fig.cap="Diagrama de cajas de la edad según el sexo", out.width="60%"}
+```{r, punto5-boxplot, echo=TRUE, fig.cap="Diagrama de cajas de la edad según el sexo", out.width="60%"}
 library(ggplot2)
 
 ggplot(datos, aes(x = sexo, y = edad)) +
@@ -244,7 +258,7 @@ Por lo tanto usamos en primera instancia una tabla donde cruzamos los datos y po
 
 Por último usamos un diagrama de barras donde comparamos solamente la afiliación a una EPS entre personas desempleadas, podemos ver que mas del 50% de las personas desempleadas encuestadas NO se encuentran afiliadas a una EPS.
 
-```{r, echo=FALSE}
+```{r, echo=TRUE}
 library(knitr)
 
 tabla_eps <- table(
@@ -259,14 +273,13 @@ kable(
 )
 ```
 
-```{r, echo=FALSE}
+```{r, echo=TRUE}
 
-# Porcentaje de NO EPS entre desempleados
 prop_sin_eps_desemp <- prop.table(tabla_eps, margin = 1)[1, 2]
 
 ```
 
-```{r punto6-plot, echo=FALSE, fig.cap="Afiliación a EPS entre personas desempleadas", out.width="60%"}
+```{r punto6-plot, echo=TRUE, fig.cap="Afiliación a EPS entre personas desempleadas", out.width="60%"}
 library(ggplot2)
 library(scales)
 
@@ -289,15 +302,15 @@ En este punto buscábamos confirmar la afirmación de que el porcentaje más alt
 
 Por medio de un gráfico de barras podemos confirmar que más del 40% de la población esta soltera.
 
-```{r, echo=FALSE}
+```{r, echo=TRUE}
 tabla_estciv <- table(datos$est_civ)
 ```
 
-```{r, echo=FALSE}
+```{r, echo=TRUE}
 prop_estciv <- prop.table(tabla_estciv) * 100
 ```
 
-```{r punto7-plot2, echo=FALSE, fig.cap="Porcentaje por estado civil", out.width="60%"}
+```{r punto7-plot2, echo=TRUE, fig.cap="Porcentaje por estado civil", out.width="60%"}
 library(ggplot2)
 library(scales)
 
@@ -321,7 +334,7 @@ El diagrama de caja de la Figura~\ref{fig:punto8-boxplot} confirma esta apreciac
 
 Por lo tanto, se concluye que la afirmación del enunciado es \textbf{verdadera}: la distribución empírica del tiempo máximo sin empleo presenta una asimetría positiva, aunque de forma moderada.
 
-```{r, echo=FALSE}
+```{r, echo=TRUE}
 library(dplyr)
 
 tiempo_stats <- datos %>%
@@ -338,7 +351,7 @@ knitr::kable(tiempo_stats,
 
 ```
 
-```{r punto8-hist, echo=FALSE, fig.cap="Histograma del tiempo sin empleo", out.width="70%"}
+```{r punto8-hist, echo=TRUE, fig.cap="Histograma del tiempo sin empleo", out.width="70%"}
 library(ggplot2)
 
 ggplot(datos, aes(x = tiemp_des)) +
@@ -349,7 +362,7 @@ ggplot(datos, aes(x = tiemp_des)) +
     y = "Frecuencia"
   )
 ```
-```{r punto8-boxplot, echo=FALSE, fig.cap="Diagrama de cajas del tiempo sin empleo", out.width="60%"}
+```{r punto8-boxplot, echo=TRUE, fig.cap="Diagrama de cajas del tiempo sin empleo", out.width="60%"}
 ggplot(datos, aes(y = tiemp_des)) +
   geom_boxplot(fill = "#DD8452") +
   labs(
@@ -367,7 +380,7 @@ Para demostrarlo graficamente usamos un diagrama de cajas
 Por lo tanto el enunciado es \textbf{verdadero}
 
 
-```{r punto9-tabla, echo=FALSE}
+```{r punto9-tabla, echo=TRUE}
 library(dplyr)
 library(knitr)
 
@@ -380,7 +393,6 @@ ing_desempeno <- datos %>%
     n            = n()
   )
 
-# Convertir n a porcentaje del total
 ing_desempeno <- ing_desempeno %>%
   mutate(porcentaje = round(n / sum(n) * 100, 1))
 
@@ -390,7 +402,7 @@ knitr::kable(
 )
 ```
 
-```{r punto9-boxplot, echo=FALSE,fig.cap="Ingresos según desempeño en lo estudiado", out.width="70%"}
+```{r punto9-boxplot, echo=TRUE,fig.cap="Ingresos según desempeño en lo estudiado", out.width="70%"}
 library(ggplot2)
 library(scales)
 
@@ -418,7 +430,7 @@ En conjunto, estos elementos indican que los ingresos no están concentrados alr
 
 Por lo tanto la afirmacion del enunciado es \textbf{verdadera} ya que los ingresos presentan un comportamiento heterogeneo
 
-```{r punto10-tabla, echo=FALSE}
+```{r punto10-tabla, echo=TRUE}
 library(dplyr)
 library(knitr)
 
@@ -435,7 +447,7 @@ ing_stats <- datos %>%
 kable(ing_stats, caption = "Medidas de dispersión del ingreso")
 ```
 
-```{r punto10-hist, echo=FALSE, fig.cap="Histograma de los ingresos", out.width="70%"}
+```{r punto10-hist, echo=TRUE, fig.cap="Histograma de los ingresos", out.width="70%"}
 library(ggplot2)
 library(scales)
 
@@ -449,7 +461,7 @@ ggplot(datos, aes(x = ing)) +
   )
 ```
 
-```{r punto10-boxplot, echo=FALSE, fig.cap="Diagrama de cajas de los ingresos", out.width="50%"}
+```{r punto10-boxplot, echo=TRUE, fig.cap="Diagrama de cajas de los ingresos", out.width="50%"}
 ggplot(datos, aes(y = ing)) +
   geom_boxplot(fill = "#DD8452") +
   scale_y_continuous(labels = label_number(big.mark=".", decimal.mark=",")) +
@@ -466,10 +478,9 @@ La ojiva del tiempo sin empleo muestra un crecimiento lento en los valores más 
 
 Por lo tanto, la afirmación del enunciado es \textbf{falsa}: la ojiva no evidencia asimetría negativa, sino una distribución aproximadamente simétrica con mayor concentración en los valores intermedios.
 
-```{r punto11-ojiva-data, echo=FALSE}
+```{r punto11-ojiva-data, echo=TRUE}
 library(dplyr)
 
-# Ordenar los valores y construir acumulados
 ojiva <- datos %>%
   select(tiemp_des) %>%
   filter(!is.na(tiemp_des)) %>%
@@ -481,7 +492,7 @@ ojiva <- datos %>%
   )
 ```
 
-```{r punto11-ojiva, echo=FALSE,fig.cap="Ojiva del tiempo máximo sin empleo", out.width="70%"}
+```{r punto11-ojiva, echo=TRUE,fig.cap="Ojiva del tiempo máximo sin empleo", out.width="70%"}
 
 library(ggplot2)
 library(scales)
@@ -508,7 +519,7 @@ En términos del valor medio, el ingreso promedio de las mujeres resulta superio
 
 En conclusión, los histogramas revelan que, aunque el ingreso medio de las mujeres es mayor, la distribución en este grupo es más heterogénea y presenta una asimetría positiva más pronunciada, mientras que la distribución masculina es más estable y concentrada en torno a su valor central.
 
-```{r punto12-tabla, echo=FALSE}
+```{r punto12-tabla, echo=TRUE}
 library(dplyr)
 library(knitr)
 
@@ -554,7 +565,7 @@ En contraste, el grupo femenino presenta una caja mucho más amplia, un rango in
 
 En conclusión, el comportamiento de los ingresos según sexo es \textbf{claramente diferente}: los hombres presentan una distribución más estable y concentrada, mientras que las mujeres exhiben una distribución más dispersa, con valores extremos que incrementan notablemente la variabilidad.
 
-```{r punto13-boxplot, echo=FALSE,fig.cap="Diagrama de cajas de los ingresos según sexo", out.width="70%"}
+```{r punto13-boxplot, echo=TRUE,fig.cap="Diagrama de cajas de los ingresos según sexo", out.width="70%"}
 library(ggplot2)
 library(scales)
 
@@ -578,7 +589,7 @@ A partir de las medidas estadísticas del ingreso según nivel educativo present
 
 El diagrama de cajas de la Figura~\ref{fig:punto14-boxplot} refuerza este comportamiento: los grupos con menor escolaridad presentan cajas bajas y compactas, lo cual indica ingresos reducidos y poca variabilidad. Conforme aumenta el nivel educativo, las cajas se desplazan hacia valores más altos de ingreso y se hacen más amplias, reflejando tanto mayores niveles salariales como una mayor dispersión. Especialmente en los niveles Profesional y Postgrado, la presencia de múltiples valores atípicos elevados sugiere que algunas personas alcanzan ingresos considerablemente altos, contribuyendo a una mayor heterogeneidad dentro de estos grupos.
 
-```{r punto14-tabla, echo=FALSE}
+```{r punto14-tabla, echo=TRUE}
 library(dplyr)
 library(knitr)
 
@@ -598,7 +609,7 @@ kable(
 )
 ```
 
-```{r punto14-boxplot, echo=FALSE,fig.cap="Ingresos según nivel educativo", out.width="75%"}
+```{r punto14-boxplot, echo=TRUE,fig.cap="Ingresos según nivel educativo", out.width="75%"}
 library(ggplot2)
 library(scales)
 
@@ -623,7 +634,7 @@ Los niveles Técnico y Tecnológico sí muestran tiempos de desempleo significat
 
 En conclusión, la afirmación del enunciado es \textbf{falsa}: en estos datos no se cumple que un mayor nivel educativo esté asociado sistemáticamente con un menor tiempo sin empleo. Aunque ciertos niveles intermedios exhiben una mejor inserción laboral, los niveles más altos no continúan esta tendencia.
 
-```{r punto15-tabla, echo=FALSE}
+```{r punto15-tabla, echo=TRUE}
 library(dplyr)
 library(knitr)
 
@@ -643,7 +654,7 @@ kable(
 )
 ```
 
-```{r punto15-boxplot, echo=FALSE,fig.cap="Tiempo sin empleo según nivel educativo", out.width="75%"}
+```{r punto15-boxplot, echo=TRUE,fig.cap="Tiempo sin empleo según nivel educativo", out.width="75%"}
 library(ggplot2)
 
 ggplot(datos, aes(x = educ, y = tiemp_des, fill = educ)) +
@@ -666,7 +677,7 @@ En los grupos de 36--45 y 46--55 años esta tendencia se mantiene, observándose
 
 En consecuencia, se concluye que sí existe una relación entre el estado civil y la edad del encuestado: los grupos jóvenes presentan mayor soltería, mientras que los grupos de edad intermedia muestran mayores proporciones de personas casadas o en unión libre. 
 
-```{r punto16-intervalos, echo=FALSE}
+```{r punto16-intervalos, echo=TRUE}
 library(dplyr)
 
 datos <- datos %>%
@@ -680,7 +691,7 @@ datos <- datos %>%
   )
 ```
 
-```{r punto16-tabla, echo=FALSE}
+```{r punto16-tabla, echo=TRUE}
 library(knitr)
 
 tabla_edad_estciv <- table(datos$edad_grupo, datos$est_civ)
@@ -691,7 +702,7 @@ kable(
 )
 ```
 
-```{r punto16-plot, echo=FALSE,fig.cap="Distribución del estado civil según intervalos de edad", out.width="80%"}
+```{r punto16-plot, echo=TRUE,fig.cap="Distribución del estado civil según intervalos de edad", out.width="80%"}
 library(ggplot2)
 library(scales)
 
@@ -718,7 +729,7 @@ En contraste, a partir del nivel Técnico y especialmente en Tecnológico, Profe
 
 Este comportamiento sugiere una relación positiva entre el nivel educativo y los ingresos: conforme aumenta el nivel educativo, los ingresos tienden a ser mayores y más variables. Por lo tanto, se concluye que existe una asociación notable entre ambas variables, donde un mayor nivel de formación se relaciona con mejores niveles de ingreso.
 
-```{r punto17-intervalos, echo=FALSE}
+```{r punto17-intervalos, echo=TRUE}
 library(dplyr)
 
 datos <- datos %>%
@@ -732,7 +743,7 @@ datos <- datos %>%
   )
 ```
 
-```{r punto17-tabla, echo=FALSE}
+```{r punto17-tabla, echo=TRUE}
 library(knitr)
 
 tabla_ing_educ <- table(datos$educ, datos$ingreso_grupo)
@@ -743,7 +754,7 @@ kable(
 )
 ```
 
-```{r punto17-plot, echo=FALSE,fig.cap="Distribución del ingreso según nivel educativo", out.width="85%"}
+```{r punto17-plot, echo=TRUE,fig.cap="Distribución del ingreso según nivel educativo", out.width="85%"}
 library(ggplot2)
 library(scales)
 
